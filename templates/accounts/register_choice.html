@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+{% block content %}
+<div class="center-block">
+  <h1>Create your account</h1>
+  <p class="muted">Choose the kind of account you need.</p>
+  <div class="choice-grid">
+    <a class="choice-card" href="{% url 'accounts:register_student' %}">
+      <h2>I'm a Student</h2>
+      <p>BSIT or BSCS student looking for an OJT or internship placement.</p>
+      <span class="btn">Sign up as Student</span>
+    </a>
+    <a class="choice-card" href="{% url 'accounts:register_company' %}">
+      <h2>I'm a Company</h2>
+      <p>Host company or organization offering OJT/internship slots.</p>
+      <span class="btn">Sign up as Company</span>
+    </a>
+  </div>
+  <p class="muted">School coordinators: your account is created by the system administrator.</p>
+  <p class="muted">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+</div>
+{% endblock %}

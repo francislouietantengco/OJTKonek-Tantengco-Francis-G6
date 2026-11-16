@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Hi, {{ student.first_name }}!</h1>
+    <p class="muted">{{ student.program }} · Year {{ student.year_level }} · {{ student.student_number }}</p>
+  </div>
+</div>
+
+{% if not student.resume_url %}
+  <div class="alert alert-warning">
+    Add a resume link to your profile. You need one before you can apply to OJT postings.
+    <a href="{% url 'accounts:profile_edit' %}">Add it now</a>
+  </div>
+{% endif %}
+
+<div class="stats">
+  <div class="stat"><span class="stat-num">0</span><span class="stat-label">Active applications</span></div>
+  <div class="stat"><span class="stat-num">0</span><span class="stat-label">Under review</span></div>
+  <div class="stat"><span class="stat-num">—</span><span class="stat-label">Placement</span></div>
+</div>
+
+<div class="cols">
+  <div class="card">
+    <h2>Recommended postings</h2>
+    <p class="muted">OJT postings from verified companies will show here once posting search is available.</p>
+  </div>
+  <div class="card">
+    <h2>Your coordinator</h2>
+    <p><strong>{{ student.coordinator.first_name }} {{ student.coordinator.last_name }}</strong><br>
+      <span class="muted">{{ student.coordinator.department }}</span></p>
+    {% if student.coordinator.contact_number %}<p class="muted">{{ student.coordinator.contact_number }}</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

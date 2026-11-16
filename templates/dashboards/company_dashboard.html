@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Company Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ company.company_name }}</h1>
+    <p class="muted">{{ company.industry|default:"Company" }} · {{ company.city }}</p>
+  </div>
+  <span class="badge badge-{{ company.verification_status }}">{{ company.get_verification_status_display }}</span>
+</div>
+
+{% if company.verification_status == 'pending' %}
+  <div class="alert alert-warning">Your company is waiting for verification by a school coordinator. You can publish OJT postings once it's verified.</div>
+{% elif company.verification_status == 'rejected' %}
+  <div class="alert alert-error">Your company verification was rejected{% if company.rejection_reason %}: {{ company.rejection_reason }}{% endif %}. Please update your profile and contact the CCS OJT office.</div>
+{% else %}
+  <div class="alert alert-success">Your company is verified. You can publish OJT postings.</div>
+{% endif %}
+
+<div class="stats">
+  <div class="stat"><span class="stat-num">0</span><span class="stat-label">Open postings</span></div>
+  <div class="stat"><span class="stat-num">0</span><span class="stat-label">New applicants</span></div>
+  <div class="stat"><span class="stat-num">0</span><span class="stat-label">Accepted</span></div>
+</div>
+
+<div class="cols">
+  <div class="card">
+    <h2>Your postings</h2>
+    <p class="muted">Posting management is coming in the next phase.</p>
+  </div>
+  <div class="card">
+    <h2>Company profile</h2>
+    <p class="muted">Students will see your company profile. Keep it complete.</p>
+    <a href="{% url 'accounts:profile_edit' %}">Edit company profile →</a>
+  </div>
+</div>
+{% endblock %}

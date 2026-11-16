@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Company sign up{% endblock %}
+{% block content %}
+<div class="auth-card wide">
+  <h1>Company sign up</h1>
+  <p class="muted">New company accounts are reviewed by a school coordinator before they can publish OJT postings.</p>
+  <form method="post" novalidate class="grid-form">
+    {% csrf_token %}
+    {% include "accounts/_form_fields.html" %}
+    <button type="submit" class="btn btn-block">Create company account</button>
+  </form>
+  <p class="muted center">Are you a student? <a href="{% url 'accounts:register_student' %}">Sign up here</a> · <a href="{% url 'accounts:login' %}">Log in</a></p>
+</div>
+{% endblock %}

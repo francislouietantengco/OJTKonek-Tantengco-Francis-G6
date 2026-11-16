@@ -1,0 +1,54 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}OJT Konek{% endblock %} · OJT Konek</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{% url 'accounts:dashboard' %}">OJT <span>Konek</span></a>
+    <nav>
+      {% if user.is_authenticated %}
+        {% if user.role == 'student' %}
+          <a href="{% url 'accounts:student_dashboard' %}">Dashboard</a>
+          <a class="disabled" title="Coming in a later phase">Browse Postings</a>
+          <a class="disabled" title="Coming in a later phase">My Applications</a>
+        {% elif user.role == 'company' %}
+          <a href="{% url 'accounts:company_dashboard' %}">Dashboard</a>
+          <a class="disabled" title="Coming in a later phase">My Postings</a>
+          <a class="disabled" title="Coming in a later phase">Applicants</a>
+        {% elif user.role == 'coordinator' %}
+          <a href="{% url 'accounts:coordinator_dashboard' %}">Dashboard</a>
+          <a class="disabled" title="Coming in a later phase">Company Verification</a>
+          <a class="disabled" title="Coming in a later phase">Placements</a>
+          {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
+        {% endif %}
+        <a href="{% url 'accounts:profile' %}">My Profile</a>
+        <span class="role-pill role-{{ user.role }}">{{ user.get_role_display }}</span>
+        <form method="post" action="{% url 'accounts:logout' %}" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="link-btn">Log out</button>
+        </form>
+      {% else %}
+        <a href="{% url 'accounts:login' %}">Log in</a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-small">Sign up</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="container">
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">OJT Konek · Connecting IT and CS students to OJT opportunities</footer>
+</body>
+</html>

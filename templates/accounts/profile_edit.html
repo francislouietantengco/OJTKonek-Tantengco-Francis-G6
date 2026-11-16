@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Edit Profile</h1>
+  <a href="{% url 'accounts:profile' %}">Cancel</a>
+</div>
+<form method="post" novalidate class="card grid-form">
+  {% csrf_token %}
+  <h2 class="full">Account</h2>
+  {% include "accounts/_form_fields.html" with form=account_form %}
+  <h2 class="full">{{ user.get_role_display }} details</h2>
+  {% include "accounts/_form_fields.html" with form=profile_form %}
+  <div class="full"><button type="submit" class="btn">Save changes</button></div>
+</form>
+{% endblock %}

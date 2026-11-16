@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Coordinator Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Coordinator Dashboard</h1>
+    <p class="muted">{% if coordinator %}{{ coordinator.first_name }} {{ coordinator.last_name }} · {{ coordinator.department }}{% endif %}</p>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><span class="stat-num">{{ student_count }}</span><span class="stat-label">Assigned students</span></div>
+  <div class="stat"><span class="stat-num">{{ pending_companies|length }}</span><span class="stat-label">Companies to verify</span></div>
+  <div class="stat"><span class="stat-num">{{ verified_count }}</span><span class="stat-label">Verified companies</span></div>
+  <div class="stat"><span class="stat-num">0</span><span class="stat-label">Placements</span></div>
+</div>
+
+<div class="cols">
+  <div class="card">
+    <h2>Assigned students</h2>
+    {% if students %}
+      <table class="table">
+        <thead><tr><th>Student no.</th><th>Name</th><th>Program</th><th>Resume</th></tr></thead>
+        <tbody>
+          {% for s in students %}
+          <tr>
+            <td>{{ s.student_number }}</td>
+            <td>{{ s.last_name }}, {{ s.first_name }}</td>
+            <td>{{ s.program }}-{{ s.year_level }}</td>
+            <td>{% if s.resume_url %}<span class="badge badge-verified">Yes</span>{% else %}<span class="badge badge-pending">None</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No students are assigned to you yet.</p>
+    {% endif %}
+  </div>
+  <div class="card">
+    <h2>Companies waiting for verification</h2>
+    {% if pending_companies %}
+      <ul class="list">
+        {% for c in pending_companies %}
+          <li><strong>{{ c.company_name }}</strong><br><span class="muted">{{ c.city }} · {{ c.contact_person }}</span></li>
+        {% endfor %}
+      </ul>
+      <p class="muted">Approve/reject tools are coming in the Company Verification module.</p>
+    {% else %}
+      <p class="muted">No companies are waiting for verification.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
