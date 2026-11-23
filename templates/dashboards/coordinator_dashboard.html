@@ -41,10 +41,10 @@
     {% if pending_companies %}
       <ul class="list">
         {% for c in pending_companies %}
-          <li><strong>{{ c.company_name }}</strong><br><span class="muted">{{ c.city }} · {{ c.contact_person }}</span></li>
+          <li><a href="{% url 'accounts:company_detail' c.pk %}"><strong>{{ c.company_name }}</strong></a><br><span class="muted">{{ c.city }} · {{ c.contact_person }}</span></li>
         {% endfor %}
       </ul>
-      <p class="muted">Approve/reject tools are coming in the Company Verification module.</p>
+      <p><a href="{% url 'accounts:company_list' %}">Open Company Verification →</a></p>
     {% else %}
       <p class="muted">No companies are waiting for verification.</p>
     {% endif %}

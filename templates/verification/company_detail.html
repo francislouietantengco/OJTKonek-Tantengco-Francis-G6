@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ company.company_name }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'accounts:company_list' %}">← Back to companies</a></p>
+<div class="page-head">
+  <div>
+    <h1>{{ company.company_name }}</h1>
+    <p class="muted">{{ company.industry|default:"Company" }} · {{ company.city }}</p>
+  </div>
+  <span class="badge badge-{{ company.verification_status }}">{{ company.get_verification_status_display }}</span>
+</div>
+
+<div class="cols">
+  <div class="card">
+    <h2>Company details</h2>
+    <dl class="details">
+      <dt>Email</dt><dd>{{ company.user.email }}</dd>
+      <dt>Address</dt><dd>{{ company.address }}, {{ company.city }}</dd>
+      <dt>Contact person</dt><dd>{{ company.contact_person }}</dd>
+      <dt>Contact number</dt><dd>{{ company.contact_number }}</dd>
+      <dt>Website</dt><dd>{% if company.website_url %}<a href="{{ company.website_url }}" target="_blank" rel="noopener">{{ company.website_url }}</a>{% else %}—{% endif %}</dd>
+      <dt>Registered</dt><dd>{{ company.user.created_at|date:"F j, Y" }}</dd>
+      <dt>Company profile</dt><dd>{{ company.description|default:"—"|linebreaksbr }}</dd>
+    </dl>
+    {% if company.verified_by %}
+      <hr>
+      <dl class="details">
+        <dt>Decision by</dt><dd>{{ company.verified_by.first_name }} {{ company.verified_by.last_name }}</dd>
+        <dt>Decision date</dt><dd>{{ company.verified_at|date:"F j, Y g:i A" }}</dd>
+        {% if company.rejection_reason %}<dt>Rejection reason</dt><dd>{{ company.rejection_reason }}</dd>{% endif %}
+      </dl>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Decision</h2>
+    {% if company.verification_status != 'verified' %}
+      <form method="post" action="{% url 'accounts:company_verify' company.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success btn-block">Verify company</button>
+      </form>
+    {% else %}
+      <p class="muted">This company is verified.</p>
+    {% endif %}
+
+    <hr>
+    <form method="post" action="{% url 'accounts:company_reject' company.pk %}" novalidate>
+      {% csrf_token %}
+      {% include "accounts/_form_fields.html" with form=reject_form %}
+      <button type="submit" class="btn btn-danger btn-block">Reject company</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

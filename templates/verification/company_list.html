@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Company Verification{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Company Verification</h1>
+    <p class="muted">Review newly registered companies before they can publish OJT postings.</p>
+  </div>
+</div>
+
+<div class="tabs">
+  {% for value, label, count in tabs %}
+    <a href="?status={{ value }}{% if q %}&q={{ q|urlencode }}{% endif %}" class="tab{% if status == value %} active{% endif %}">{{ label }} <span class="tab-count">{{ count }}</span></a>
+  {% endfor %}
+</div>
+
+<form method="get" class="filter-bar">
+  <input type="hidden" name="status" value="{{ status }}">
+  <input class="input" type="search" name="q" value="{{ q }}" placeholder="Search by company, city or email">
+  <button class="btn" type="submit">Search</button>
+</form>
+
+<div class="card">
+  {% if companies %}
+    <table class="table">
+      <thead><tr><th>Company</th><th>City</th><th>Contact person</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for c in companies %}
+        <tr>
+          <td><strong>{{ c.company_name }}</strong><br><span class="muted small">{{ c.user.email }}</span></td>
+          <td>{{ c.city }}</td>
+          <td>{{ c.contact_person }}</td>
+          <td><span class="badge badge-{{ c.verification_status }}">{{ c.get_verification_status_display }}</span></td>
+          <td class="right"><a href="{% url 'accounts:company_detail' c.pk %}">Review →</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No companies found.</p>
+  {% endif %}
+</div>
+{% endblock %}
