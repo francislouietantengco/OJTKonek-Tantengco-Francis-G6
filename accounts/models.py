@@ -239,7 +239,35 @@ class Company(models.Model):
                 condition=models.Q(verification_status__in=["pending", "verified", "rejected"]),
                 name="companies_verification_status_valid",
             ),
+            models.CheckConstraint(
+                condition=~models.Q(verification_status="rejected") | models.Q(rejection_reason__isnull=False),
+                name="companies_rejection_needs_reason",
+            ),
         ]
 
     def __str__(self):
         return self.company_name
+
+    @property
+    def is_verified(self):
+        return self.verification_status == self.VerificationStatus.VERIFIED
+
+    # --- F-04 Company Verification (BR-10) -----------------------------------
+    def verify(self, coordinator):
+        self.verification_status = self.VerificationStatus.VERIFIED
+        self.verified_by = coordinator
+        self.verified_at = timezone.now()
+        self.rejection_reason = None
+        self.save(update_fields=["verification_status", "verified_by", "verified_at", "rejection_reason"])
+
+    def reject(self, coordinator, reason):
+        self.verification_status = self.VerificationStatus.REJECTED
+        self.verified_by = coordinator
+        self.verified_at = timezone.now()
+        self.rejection_reason = reason
+        self.save(update_fields=["verification_status", "verified_by", "verified_at", "rejection_reason"])
+
+    def resubmit(self):
+        """A rejected company that updates its profile goes back to Pending for review."""
+        self.verification_status = self.VerificationStatus.PENDING
+        self.save(update_fields=["verification_status"])
