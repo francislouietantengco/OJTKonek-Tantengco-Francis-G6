@@ -89,3 +89,12 @@ applications/   applications (apply, withdraw, applicant tracking, coordinator o
 templates/      Django templates for every page
 docs/           completion reports
 ```
+
+## Branching strategy
+
+- `main` – stable releases only, no direct commits
+- `develop` – integration branch, created from `main`
+- `feature/<name>`, `fix/<name>`, `docs/<name>` – one branch per change, created from `develop`
+
+Workflow: branch → Pull Request into `develop` → when an increment is done, Pull Request from `develop` into `main`.
+Merged branches are kept.
