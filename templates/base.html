@@ -14,16 +14,16 @@
         {% if user.role == 'student' %}
           <a href="{% url 'accounts:student_dashboard' %}">Dashboard</a>
           <a href="{% url 'postings:browse' %}">Browse Postings</a>
-          <a class="disabled" title="Coming in a later phase">My Applications</a>
+          <a href="{% url 'applications:my_applications' %}">My Applications</a>
         {% elif user.role == 'company' %}
           <a href="{% url 'accounts:company_dashboard' %}">Dashboard</a>
           <a href="{% url 'postings:my_postings' %}">My Postings</a>
-          <a class="disabled" title="Coming in a later phase">Applicants</a>
+          <a href="{% url 'applications:all_applicants' %}">Applicants</a>
         {% elif user.role == 'coordinator' %}
           <a href="{% url 'accounts:coordinator_dashboard' %}">Dashboard</a>
           <a href="{% url 'accounts:company_list' %}">Company Verification</a>
           <a href="{% url 'postings:browse' %}">Postings</a>
-          <a class="disabled" title="Coming in a later phase">Placements</a>
+          <a href="{% url 'applications:student_applications' %}">Student Applications</a>
           {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
         {% endif %}
         <a href="{% url 'accounts:profile' %}">My Profile</a>

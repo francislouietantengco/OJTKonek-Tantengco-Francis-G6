@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Application{% endblock %}
+{% block content %}
+<p><a href="{% url 'applications:my_applications' %}">← Back to my applications</a></p>
+<div class="page-head">
+  <div>
+    <h1>{{ application.posting.title }}</h1>
+    <p class="muted">{{ application.posting.company.company_name }} · {{ application.posting.location }} · {{ application.posting.duration_weeks }} weeks</p>
+  </div>
+  <span class="badge badge-{{ application.status }}">{{ application.get_status_display }}</span>
+</div>
+
+{% if application.status == 'accepted' %}
+  <div class="alert alert-success">Congratulations! {{ application.posting.company.company_name }} accepted your application.</div>
+{% elif application.status == 'rejected' %}
+  <div class="alert alert-error">This application was not accepted.</div>
+{% endif %}
+
+<div class="cols">
+  <div class="card">
+    <h2>Your application</h2>
+    <dl class="details">
+      <dt>Submitted</dt><dd>{{ application.submitted_at|date:"F j, Y g:i A" }}</dd>
+      <dt>Resume</dt><dd><a href="{{ application.resume_url_snapshot }}" target="_blank" rel="noopener">Open resume</a></dd>
+      <dt>Cover letter</dt><dd>{{ application.cover_letter|default:"—"|linebreaksbr }}</dd>
+    </dl>
+    {% if application.reviewed_at %}
+      <hr>
+      <h2>Company feedback</h2>
+      <dl class="details">
+        <dt>Updated</dt><dd>{{ application.reviewed_at|date:"F j, Y g:i A" }}</dd>
+        <dt>Remarks</dt><dd>{{ application.reviewer_remarks|default:"—" }}</dd>
+      </dl>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Actions</h2>
+    {% if application.can_edit %}
+      <p><a class="btn btn-secondary btn-block" href="{% url 'applications:edit' application.pk %}">Edit cover letter</a></p>
+    {% endif %}
+    {% if application.can_withdraw %}
+      <form method="post" action="{% url 'applications:withdraw' application.pk %}" onsubmit="return confirm('Withdraw this application? You cannot apply to this posting again.');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger btn-block">Withdraw application</button>
+      </form>
+    {% endif %}
+    {% if not application.can_edit and not application.can_withdraw %}
+      <p class="muted">No actions available. This application is {{ application.get_status_display|lower }}.</p>
+    {% endif %}
+    <hr>
+    <p><a href="{% url 'postings:detail' application.posting.pk %}">View posting</a></p>
+  </div>
+</div>
+{% endblock %}

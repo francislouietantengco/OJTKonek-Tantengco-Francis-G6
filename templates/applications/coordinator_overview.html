@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Student Applications{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Student Applications</h1>
+    <p class="muted">Applications of the students assigned to you.</p>
+  </div>
+</div>
+
+<div class="cols">
+  <div class="card">
+    <h2>{% if selected %}Applications of selected student · <a href="{% url 'applications:student_applications' %}" class="small">show all</a>{% else %}All applications{% endif %}</h2>
+    {% if applications %}
+      <table class="table">
+        <thead><tr><th>Student</th><th>Posting</th><th>Company</th><th>Submitted</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for a in applications %}
+          <tr>
+            <td>{{ a.student.last_name }}, {{ a.student.first_name }}</td>
+            <td>{{ a.posting.title }}</td>
+            <td>{{ a.posting.company.company_name }}</td>
+            <td>{{ a.submitted_at|date:"M j, Y" }}</td>
+            <td><span class="badge badge-{{ a.status }}">{{ a.get_status_display }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="muted">No applications yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Your students</h2>
+    <ul class="list">
+      {% for s in students %}
+        <li><a href="?student={{ s.pk }}">{{ s.last_name }}, {{ s.first_name }}</a><br>
+          <span class="muted small">{{ s.total }} total · {{ s.active }} active · {{ s.accepted }} accepted</span></li>
+      {% empty %}
+        <li class="muted">No students assigned yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

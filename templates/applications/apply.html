@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{% if application %}Edit application{% else %}Apply{% endif %}{% endblock %}
+{% block content %}
+<p><a href="{% if application %}{% url 'applications:detail' application.pk %}{% else %}{% url 'postings:detail' posting.pk %}{% endif %}">← Back</a></p>
+<div class="page-head">
+  <div>
+    <h1>{% if application %}Edit your application{% else %}Apply for {{ posting.title }}{% endif %}</h1>
+    <p class="muted">{{ posting.company.company_name }} · {{ posting.location }} · {{ posting.duration_weeks }} weeks</p>
+  </div>
+</div>
+
+<div class="cols">
+  <form method="post" novalidate class="card">
+    {% csrf_token %}
+    {% include "accounts/_form_fields.html" %}
+    <button type="submit" class="btn">{% if application %}Save changes{% else %}Submit application{% endif %}</button>
+  </form>
+
+  <div class="card">
+    <h2>Resume sent with this application</h2>
+    {% if application %}
+      <p><a href="{{ application.resume_url_snapshot }}" target="_blank" rel="noopener">{{ application.resume_url_snapshot|truncatechars:45 }}</a></p>
+      <p class="muted small">The resume link is saved at the time you applied.</p>
+    {% else %}
+      <p><a href="{{ student.resume_url }}" target="_blank" rel="noopener">{{ student.resume_url|truncatechars:45 }}</a></p>
+      <p class="muted small">This is the resume link on your profile. <a href="{% url 'accounts:profile_edit' %}">Change it</a> before applying if needed.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

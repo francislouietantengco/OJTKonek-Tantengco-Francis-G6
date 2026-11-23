@@ -112,9 +112,14 @@ def student_dashboard(request):
     recent_postings = (
         OjtPosting.objects.visible_to_students().select_related("field", "company").order_by("-published_at")[:5]
     )
+    applications = student.applications.select_related("posting", "posting__company")
     return render(request, "dashboards/student_dashboard.html", {
         "student": student,
         "recent_postings": recent_postings,
+        "active_count": applications.filter(status__in=["pending", "under_review"]).count(),
+        "review_count": applications.filter(status="under_review").count(),
+        "accepted_count": applications.filter(status="accepted").count(),
+        "recent_applications": applications[:5],
     })
 
 
@@ -130,7 +135,17 @@ def company_dashboard(request):
         "open_count": postings.filter(status=OjtPosting.Status.OPEN).count(),
         "draft_count": postings.filter(status=OjtPosting.Status.DRAFT).count(),
         "recent_postings": postings[:5],
+        "new_applicants": _company_applications(company).filter(status="pending").count(),
+        "accepted_total": _company_applications(company).filter(status="accepted").count(),
+        "latest_applicants": _company_applications(company).exclude(status="withdrawn")
+                                                             .select_related("student", "posting")[:5],
     })
+
+
+def _company_applications(company):
+    from applications.models import Application
+
+    return Application.objects.filter(posting__company=company)
 
 
 def _open_postings_count():
@@ -142,7 +157,12 @@ def _open_postings_count():
 @role_required(User.Role.COORDINATOR)
 def coordinator_dashboard(request):
     coordinator = request.user.profile
-    students = coordinator.students.select_related("user") if coordinator else Student.objects.none()
+    from django.db.models import Count, Q
+
+    students = (coordinator.students.select_related("user") if coordinator else Student.objects.none()).annotate(
+        app_total=Count("applications"),
+        app_accepted=Count("applications", filter=Q(applications__status="accepted")),
+    )
     context = {
         "coordinator": coordinator,
         "students": students,

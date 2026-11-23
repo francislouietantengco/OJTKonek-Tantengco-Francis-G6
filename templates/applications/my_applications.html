@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}My Applications{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>My Applications</h1>
+    <p class="muted">You can have up to 5 Pending or Under Review applications at a time.</p>
+  </div>
+  <a class="btn" href="{% url 'postings:browse' %}">Browse postings</a>
+</div>
+
+<div class="tabs">
+  {% for value, label, count in tabs %}
+    <a href="?status={{ value }}" class="tab{% if status == value %} active{% endif %}">{{ label }} <span class="tab-count">{{ count }}</span></a>
+  {% endfor %}
+</div>
+
+<div class="card">
+  {% if applications %}
+    <table class="table">
+      <thead><tr><th>Posting</th><th>Company</th><th>Submitted</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for a in applications %}
+        <tr>
+          <td><strong>{{ a.posting.title }}</strong><br><span class="muted small">{{ a.posting.field }} · {{ a.posting.location }}</span></td>
+          <td>{{ a.posting.company.company_name }}</td>
+          <td>{{ a.submitted_at|date:"M j, Y" }}</td>
+          <td><span class="badge badge-{{ a.status }}">{{ a.get_status_display }}</span></td>
+          <td class="right"><a href="{% url 'applications:detail' a.pk %}">View →</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No applications here. <a href="{% url 'postings:browse' %}">Find an OJT posting</a>.</p>
+  {% endif %}
+</div>
+{% endblock %}

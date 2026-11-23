@@ -32,9 +32,20 @@
       <dt>Deadline</dt><dd>{{ posting.application_deadline|date:"F j, Y" }}</dd>
     </dl>
     <hr>
-    {% block apply_box %}
-      <p class="muted">Online applications are coming soon.</p>
-    {% endblock %}
+    {% if user.role == 'student' %}
+      {% if existing_application %}
+        <p>You applied on {{ existing_application.submitted_at|date:"M j, Y" }}.</p>
+        <p><span class="badge badge-{{ existing_application.status }}">{{ existing_application.get_status_display }}</span></p>
+        <a class="btn btn-secondary btn-block" href="{% url 'applications:detail' existing_application.pk %}">View my application</a>
+      {% elif apply_blocked %}
+        <div class="alert alert-warning">{{ apply_blocked }}</div>
+        {% if not user.student_profile.resume_url %}<a class="btn btn-block" href="{% url 'accounts:profile_edit' %}">Add resume link</a>{% endif %}
+      {% else %}
+        <a class="btn btn-block" href="{% url 'applications:apply' posting.pk %}">Apply now</a>
+      {% endif %}
+    {% else %}
+      <p class="muted">Only students can apply.</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

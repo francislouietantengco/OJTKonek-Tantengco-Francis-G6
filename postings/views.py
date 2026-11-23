@@ -70,7 +70,14 @@ def posting_create(request):
 @role_required(COMPANY)
 def manage_detail(request, posting_id):
     posting = _own_posting(request, posting_id)
-    return render(request, "postings/manage_detail.html", {"posting": posting})
+    apps = posting.applications.all()
+    summary = {
+        "total": apps.exclude(status="withdrawn").count(),
+        "pending": apps.filter(status="pending").count(),
+        "under_review": apps.filter(status="under_review").count(),
+        "accepted": apps.filter(status="accepted").count(),
+    }
+    return render(request, "postings/manage_detail.html", {"posting": posting, "summary": summary})
 
 
 @role_required(COMPANY)
@@ -146,4 +153,15 @@ def posting_detail(request, posting_id):
     posting = get_object_or_404(
         OjtPosting.objects.visible_to_students().select_related("field", "company"), pk=posting_id
     )
-    return render(request, "postings/posting_detail.html", {"posting": posting})
+    context = {"posting": posting}
+    if request.user.role == STUDENT:
+        from applications.models import Application
+
+        student = request.user.profile
+        context["existing_application"] = Application.objects.filter(student=student, posting=posting).first()
+        try:
+            Application.check_can_apply(student, posting)
+            context["apply_blocked"] = None
+        except ValidationError as e:
+            context["apply_blocked"] = " ".join(e.messages)
+    return render(request, "postings/posting_detail.html", context)
