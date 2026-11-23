@@ -92,6 +92,10 @@ class OjtPosting(models.Model):
         return self.application_deadline < timezone.localdate()
 
     @property
+    def accepted_count(self):
+        return self.applications.filter(status="accepted").count()
+
+    @property
     def is_open(self):
         return self.status == self.Status.OPEN
 
@@ -110,6 +114,8 @@ class OjtPosting(models.Model):
             raise ValidationError("Your company must be verified before you can publish postings.")
         if self.deadline_passed:
             raise ValidationError("The application deadline has passed. Move the deadline before publishing.")
+        if self.pk and self.accepted_count >= self.slots:
+            raise ValidationError("All slots are filled. Add more slots before reopening this posting.")
         self.status = self.Status.OPEN
         self.published_at = self.published_at or timezone.now()
         self.save(update_fields=["status", "published_at", "updated_at"])

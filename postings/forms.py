@@ -34,6 +34,20 @@ class PostingForm(StyledFormMixin, forms.ModelForm):
         self.fields["field"].empty_label = "Select a field"
         self.fields["duration_weeks"].widget.attrs.update(min=OjtPosting.MIN_WEEKS, max=OjtPosting.MAX_WEEKS)
         self.fields["slots"].widget.attrs.update(min=1)
+        # BR-17: field and duration are locked once the posting has received its first application.
+        self.locked = bool(self.instance.pk and self.instance.applications.exists())
+        if self.locked:
+            for name in ("field", "duration_weeks"):
+                self.fields[name].disabled = True
+                self.fields[name].help_text = "Locked because this posting already has applications."
+
+    def clean_slots(self):
+        slots = self.cleaned_data["slots"]
+        if self.instance.pk:
+            accepted = self.instance.applications.filter(status="accepted").count()
+            if slots < accepted:
+                raise forms.ValidationError(f"You already accepted {accepted} student(s); slots cannot be lower.")
+        return slots
 
     def clean_title(self):
         return self.cleaned_data["title"].strip()
