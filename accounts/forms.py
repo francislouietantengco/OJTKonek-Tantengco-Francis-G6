@@ -57,7 +57,9 @@ class StudentRegistrationForm(BaseRegistrationForm):
     program = forms.ChoiceField(choices=Student.Program.choices)
     year_level = forms.TypedChoiceField(choices=[(i, f"Year {i}") for i in range(1, 5)], coerce=int)
     coordinator = forms.ModelChoiceField(
-        queryset=SchoolCoordinator.objects.filter(user__account_status=User.AccountStatus.ACTIVE),
+        queryset=SchoolCoordinator.objects.filter(
+            user__account_status=User.AccountStatus.ACTIVE, user__is_superuser=False
+        ),
         empty_label="Select your OJT coordinator",
     )
     contact_number = forms.CharField(max_length=20, required=False)
