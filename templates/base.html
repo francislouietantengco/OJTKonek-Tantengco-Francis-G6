@@ -21,7 +21,7 @@
           <a class="disabled" title="Coming in a later phase">Applicants</a>
         {% elif user.role == 'coordinator' %}
           <a href="{% url 'accounts:coordinator_dashboard' %}">Dashboard</a>
-          <a class="disabled" title="Coming in a later phase">Company Verification</a>
+          <a href="{% url 'accounts:company_list' %}">Company Verification</a>
           <a class="disabled" title="Coming in a later phase">Placements</a>
           {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
         {% endif %}

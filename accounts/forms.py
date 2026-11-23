@@ -225,3 +225,21 @@ PROFILE_FORMS = {
     User.Role.COMPANY: CompanyProfileForm,
     User.Role.COORDINATOR: CoordinatorProfileForm,
 }
+
+
+# --------------------------------------------------------------------------
+# Company verification (coordinator)
+# --------------------------------------------------------------------------
+class CompanyRejectForm(StyledFormMixin, forms.Form):
+    rejection_reason = forms.CharField(
+        max_length=255,
+        label="Reason for rejection",
+        widget=forms.Textarea(attrs={"rows": 3}),
+        help_text="The company will see this reason on its dashboard.",
+    )
+
+    def clean_rejection_reason(self):
+        reason = self.cleaned_data["rejection_reason"].strip()
+        if len(reason) < 10:
+            raise forms.ValidationError("Please give a clear reason (at least 10 characters).")
+        return reason

@@ -154,6 +154,9 @@ def profile_edit(request):
             account_form.save()
             profile_form.save()
             messages.success(request, "Your profile has been updated.")
+            if user.role == User.Role.COMPANY and profile.verification_status == Company.VerificationStatus.REJECTED:
+                profile.resubmit()
+                messages.info(request, "Your company was sent back to the coordinators for verification.")
             return redirect("accounts:profile")
         messages.error(request, "Please fix the errors below and try again.")
     else:

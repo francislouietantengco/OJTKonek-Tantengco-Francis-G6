@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import verification_views, views
 
 app_name = "accounts"
 
@@ -16,4 +16,9 @@ urlpatterns = [
     path("dashboard/coordinator/", views.coordinator_dashboard, name="coordinator_dashboard"),
     path("profile/", views.profile_view, name="profile"),
     path("profile/edit/", views.profile_edit, name="profile_edit"),
+    # F-04 Company Verification (coordinator)
+    path("companies/", verification_views.company_list, name="company_list"),
+    path("companies/<int:company_id>/", verification_views.company_detail, name="company_detail"),
+    path("companies/<int:company_id>/verify/", verification_views.company_verify, name="company_verify"),
+    path("companies/<int:company_id>/reject/", verification_views.company_reject, name="company_reject"),
 ]
