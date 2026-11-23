@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ posting.title }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'postings:browse' %}">← Back to postings</a></p>
+<div class="page-head">
+  <div>
+    <h1>{{ posting.title }}</h1>
+    <p class="muted">{{ posting.company.company_name }} · {{ posting.company.city }}</p>
+  </div>
+  <span class="badge badge-open">{{ posting.field }}</span>
+</div>
+
+<div class="cols">
+  <div class="card">
+    <h2>About the OJT</h2>
+    <p>{{ posting.description|linebreaksbr }}</p>
+    {% if posting.requirements %}
+      <h2>Requirements</h2>
+      <p>{{ posting.requirements|linebreaksbr }}</p>
+    {% endif %}
+    <hr>
+    <h2>About {{ posting.company.company_name }}</h2>
+    <p>{{ posting.company.description|default:"No company profile yet."|linebreaksbr }}</p>
+    {% if posting.company.website_url %}<p><a href="{{ posting.company.website_url }}" target="_blank" rel="noopener">Visit website</a></p>{% endif %}
+  </div>
+
+  <div class="card">
+    <dl class="details">
+      <dt>Location</dt><dd>{{ posting.location }}</dd>
+      <dt>Duration</dt><dd>{{ posting.duration_weeks }} weeks</dd>
+      <dt>Slots</dt><dd>{{ posting.slots }}</dd>
+      <dt>Deadline</dt><dd>{{ posting.application_deadline|date:"F j, Y" }}</dd>
+    </dl>
+    <hr>
+    {% block apply_box %}
+      <p class="muted">Online applications are coming soon.</p>
+    {% endblock %}
+  </div>
+</div>
+{% endblock %}

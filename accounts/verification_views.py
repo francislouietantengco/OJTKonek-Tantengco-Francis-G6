@@ -75,6 +75,8 @@ def company_reject(request, company_id):
             "verification/company_detail.html",
             {"company": company, "reject_form": form},
         )
-    company.reject(request.user.profile, form.cleaned_data["rejection_reason"])
+    closed = company.reject(request.user.profile, form.cleaned_data["rejection_reason"])
     messages.success(request, f"{company.company_name} was rejected. The company can see your reason.")
+    if closed:
+        messages.info(request, f"{closed} open posting(s) of this company were closed.")
     return redirect("accounts:company_detail", company_id=company.pk)

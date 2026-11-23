@@ -23,8 +23,18 @@
 
 <div class="cols">
   <div class="card">
-    <h2>Recommended postings</h2>
-    <p class="muted">OJT postings from verified companies will show here once posting search is available.</p>
+    <h2>Recent postings</h2>
+    {% if recent_postings %}
+      <ul class="list">
+        {% for p in recent_postings %}
+          <li><a href="{% url 'postings:detail' p.pk %}"><strong>{{ p.title }}</strong></a><br>
+            <span class="muted small">{{ p.company.company_name }} · {{ p.location }} · {{ p.duration_weeks }} weeks · apply by {{ p.application_deadline|date:"M j" }}</span></li>
+        {% endfor %}
+      </ul>
+      <p><a href="{% url 'postings:browse' %}">Browse all postings →</a></p>
+    {% else %}
+      <p class="muted">No open postings right now. Check back soon.</p>
+    {% endif %}
   </div>
   <div class="card">
     <h2>Your coordinator</h2>

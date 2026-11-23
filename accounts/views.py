@@ -105,14 +105,38 @@ def dashboard_redirect(request):
 
 @role_required(User.Role.STUDENT)
 def student_dashboard(request):
+    from postings.models import OjtPosting
+
+    OjtPosting.close_expired()
     student = request.user.profile
-    return render(request, "dashboards/student_dashboard.html", {"student": student})
+    recent_postings = (
+        OjtPosting.objects.visible_to_students().select_related("field", "company").order_by("-published_at")[:5]
+    )
+    return render(request, "dashboards/student_dashboard.html", {
+        "student": student,
+        "recent_postings": recent_postings,
+    })
 
 
 @role_required(User.Role.COMPANY)
 def company_dashboard(request):
+    from postings.models import OjtPosting
+
+    OjtPosting.close_expired()
     company = request.user.profile
-    return render(request, "dashboards/company_dashboard.html", {"company": company})
+    postings = company.postings.select_related("field")
+    return render(request, "dashboards/company_dashboard.html", {
+        "company": company,
+        "open_count": postings.filter(status=OjtPosting.Status.OPEN).count(),
+        "draft_count": postings.filter(status=OjtPosting.Status.DRAFT).count(),
+        "recent_postings": postings[:5],
+    })
+
+
+def _open_postings_count():
+    from postings.models import OjtPosting
+
+    return OjtPosting.objects.visible_to_students().count()
 
 
 @role_required(User.Role.COORDINATOR)
@@ -125,6 +149,7 @@ def coordinator_dashboard(request):
         "student_count": students.count(),
         "pending_companies": Company.objects.filter(verification_status=Company.VerificationStatus.PENDING),
         "verified_count": Company.objects.filter(verification_status=Company.VerificationStatus.VERIFIED).count(),
+        "open_postings_count": _open_postings_count(),
     }
     return render(request, "dashboards/coordinator_dashboard.html", context)
 

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}My Postings{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>My OJT Postings</h1>
+    <p class="muted">{{ company.company_name }}</p>
+  </div>
+  <a class="btn" href="{% url 'postings:create' %}">+ New posting</a>
+</div>
+
+{% if not company.is_verified %}
+  <div class="alert alert-warning">You can create drafts now, but you can only publish them once a coordinator verifies your company.</div>
+{% endif %}
+
+<div class="tabs">
+  {% for value, label, count in tabs %}
+    <a href="?status={{ value }}" class="tab{% if status == value %} active{% endif %}">{{ label }} <span class="tab-count">{{ count }}</span></a>
+  {% endfor %}
+</div>
+
+<div class="card">
+  {% if postings %}
+    <table class="table">
+      <thead><tr><th>Title</th><th>Field</th><th>Location</th><th>Weeks</th><th>Slots</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for p in postings %}
+        <tr>
+          <td><strong>{{ p.title }}</strong></td>
+          <td>{{ p.field }}</td>
+          <td>{{ p.location }}</td>
+          <td>{{ p.duration_weeks }}</td>
+          <td>{{ p.slots }}</td>
+          <td>{{ p.application_deadline|date:"M j, Y" }}</td>
+          <td><span class="badge badge-{{ p.status }}">{{ p.get_status_display }}</span></td>
+          <td class="right"><a href="{% url 'postings:manage_detail' p.pk %}">Manage →</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No postings here yet. <a href="{% url 'postings:create' %}">Create your first posting</a>.</p>
+  {% endif %}
+</div>
+{% endblock %}

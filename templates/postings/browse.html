@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Browse OJT Postings{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Browse OJT Postings</h1>
+    <p class="muted">Open postings from verified companies.</p>
+  </div>
+</div>
+
+<form method="get" class="filter-bar card">
+  {{ form.q }}
+  {{ form.field }}
+  {{ form.location }}
+  {{ form.duration }}
+  <button type="submit" class="btn">Search</button>
+  {% if request.GET %}<a href="{% url 'postings:browse' %}" class="btn btn-secondary">Clear</a>{% endif %}
+</form>
+
+<p class="muted">{{ postings|length }} posting{{ postings|length|pluralize }} found</p>
+
+<div class="posting-grid">
+  {% for p in postings %}
+    <a class="posting-card" href="{% url 'postings:detail' p.pk %}">
+      <span class="badge badge-open">{{ p.field }}</span>
+      <h2>{{ p.title }}</h2>
+      <p class="muted">{{ p.company.company_name }}</p>
+      <ul class="meta">
+        <li>📍 {{ p.location }}</li>
+        <li>⏱ {{ p.duration_weeks }} weeks</li>
+        <li>👥 {{ p.slots }} slot{{ p.slots|pluralize }}</li>
+        <li>📅 Apply by {{ p.application_deadline|date:"M j, Y" }}</li>
+      </ul>
+    </a>
+  {% empty %}
+    <div class="card"><p class="muted">No postings match your search.</p></div>
+  {% endfor %}
+</div>
+{% endblock %}
