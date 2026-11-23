@@ -16,9 +16,9 @@
 {% endif %}
 
 <div class="stats">
-  <div class="stat"><span class="stat-num">0</span><span class="stat-label">Active applications</span></div>
-  <div class="stat"><span class="stat-num">0</span><span class="stat-label">Under review</span></div>
-  <div class="stat"><span class="stat-num">—</span><span class="stat-label">Placement</span></div>
+  <div class="stat"><span class="stat-num">{{ active_count }} / 5</span><span class="stat-label">Active applications</span></div>
+  <div class="stat"><span class="stat-num">{{ review_count }}</span><span class="stat-label">Under review</span></div>
+  <div class="stat"><span class="stat-num">{{ accepted_count }}</span><span class="stat-label">Accepted offers</span></div>
 </div>
 
 <div class="cols">
@@ -37,6 +37,20 @@
     {% endif %}
   </div>
   <div class="card">
+    <h2>My applications</h2>
+    {% if recent_applications %}
+      <ul class="list">
+        {% for a in recent_applications %}
+          <li><a href="{% url 'applications:detail' a.pk %}">{{ a.posting.title }}</a>
+            <span class="badge badge-{{ a.status }}">{{ a.get_status_display }}</span><br>
+            <span class="muted small">{{ a.posting.company.company_name }}</span></li>
+        {% endfor %}
+      </ul>
+      <p><a href="{% url 'applications:my_applications' %}">See all →</a></p>
+    {% else %}
+      <p class="muted">You haven't applied yet.</p>
+    {% endif %}
+    <hr>
     <h2>Your coordinator</h2>
     <p><strong>{{ student.coordinator.first_name }} {{ student.coordinator.last_name }}</strong><br>
       <span class="muted">{{ student.coordinator.department }}</span></p>

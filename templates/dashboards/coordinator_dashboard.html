@@ -20,7 +20,7 @@
     <h2>Assigned students</h2>
     {% if students %}
       <table class="table">
-        <thead><tr><th>Student no.</th><th>Name</th><th>Program</th><th>Resume</th></tr></thead>
+        <thead><tr><th>Student no.</th><th>Name</th><th>Program</th><th>Resume</th><th>Applications</th></tr></thead>
         <tbody>
           {% for s in students %}
           <tr>
@@ -28,6 +28,7 @@
             <td>{{ s.last_name }}, {{ s.first_name }}</td>
             <td>{{ s.program }}-{{ s.year_level }}</td>
             <td>{% if s.resume_url %}<span class="badge badge-verified">Yes</span>{% else %}<span class="badge badge-pending">None</span>{% endif %}</td>
+            <td><a href="{% url 'applications:student_applications' %}?student={{ s.pk }}">{{ s.app_total }}</a>{% if s.app_accepted %} · <span class="badge badge-accepted">{{ s.app_accepted }} accepted</span>{% endif %}</td>
           </tr>
           {% endfor %}
         </tbody>

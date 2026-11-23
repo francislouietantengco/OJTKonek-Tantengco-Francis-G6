@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Applicant{% endblock %}
+{% block content %}
+<p><a href="{% url 'applications:posting_applicants' application.posting.pk %}">← Back to applicants</a></p>
+<div class="page-head">
+  <div>
+    <h1>{{ application.student.first_name }} {{ application.student.last_name }}</h1>
+    <p class="muted">Applied for {{ application.posting.title }} · {{ application.submitted_at|date:"F j, Y" }}</p>
+  </div>
+  <span class="badge badge-{{ application.status }}">{{ application.get_status_display }}</span>
+</div>
+
+<div class="cols">
+  <div class="card">
+    <h2>Applicant</h2>
+    <dl class="details">
+      <dt>Program</dt><dd>{{ application.student.program }} · Year {{ application.student.year_level }}</dd>
+      <dt>Email</dt><dd>{{ application.student.user.email }}</dd>
+      <dt>Contact number</dt><dd>{{ application.student.contact_number|default:"—" }}</dd>
+      <dt>Resume</dt><dd><a href="{{ application.resume_url_snapshot }}" target="_blank" rel="noopener">Open resume</a></dd>
+      <dt>Portfolio</dt><dd>{% if application.student.portfolio_url %}<a href="{{ application.student.portfolio_url }}" target="_blank" rel="noopener">Open portfolio</a>{% else %}—{% endif %}</dd>
+      <dt>Cover letter</dt><dd>{{ application.cover_letter|default:"—"|linebreaksbr }}</dd>
+    </dl>
+    {% if application.reviewer_remarks %}
+      <hr>
+      <dl class="details"><dt>Your remarks</dt><dd>{{ application.reviewer_remarks }}</dd></dl>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Decision</h2>
+    {% if application.is_active %}
+      {% if form.non_field_errors %}<div class="alert alert-error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+      {% if application.status == 'pending' %}
+        <form method="post" action="{% url 'applications:decide' application.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="review">
+          <button type="submit" class="btn btn-secondary btn-block">Mark as under review</button>
+        </form>
+        <hr>
+      {% endif %}
+      <form method="post" action="{% url 'applications:decide' application.pk %}" novalidate>
+        {% csrf_token %}
+        <div class="field{% if form.remarks.errors %} has-error{% endif %}">
+          <label for="{{ form.remarks.id_for_label }}">{{ form.remarks.label }}</label>
+          {{ form.remarks }}
+          <small class="help">{{ form.remarks.help_text }}</small>
+          {% for error in form.remarks.errors %}<small class="error">{{ error }}</small>{% endfor %}
+        </div>
+        <div class="btn-group">
+          <button type="submit" name="action" value="accept" class="btn btn-success">Accept</button>
+          <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+        </div>
+      </form>
+      <p class="muted small">{{ application.posting.accepted_count }} of {{ application.posting.slots }} slot{{ application.posting.slots|pluralize }} filled.</p>
+    {% else %}
+      <p class="muted">This application is {{ application.get_status_display|lower }}. No further changes are allowed.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

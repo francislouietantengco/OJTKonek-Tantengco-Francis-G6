@@ -20,6 +20,8 @@
 <div class="stats">
   <div class="stat"><span class="stat-num">{{ open_count }}</span><span class="stat-label">Open postings</span></div>
   <div class="stat"><span class="stat-num">{{ draft_count }}</span><span class="stat-label">Drafts</span></div>
+  <div class="stat"><span class="stat-num">{{ new_applicants }}</span><span class="stat-label">New applicants</span></div>
+  <div class="stat"><span class="stat-num">{{ accepted_total }}</span><span class="stat-label">Accepted</span></div>
 </div>
 
 <div class="cols">
@@ -44,6 +46,20 @@
     {% endif %}
   </div>
   <div class="card">
+    <h2>Latest applicants</h2>
+    {% if latest_applicants %}
+      <ul class="list">
+        {% for a in latest_applicants %}
+          <li><a href="{% url 'applications:applicant_detail' a.pk %}">{{ a.student.first_name }} {{ a.student.last_name }}</a>
+            <span class="badge badge-{{ a.status }}">{{ a.get_status_display }}</span><br>
+            <span class="muted small">{{ a.posting.title }}</span></li>
+        {% endfor %}
+      </ul>
+      <p><a href="{% url 'applications:all_applicants' %}">See all applicants →</a></p>
+    {% else %}
+      <p class="muted">No applicants yet.</p>
+    {% endif %}
+    <hr>
     <h2>Company profile</h2>
     <p class="muted">Students will see your company profile. Keep it complete.</p>
     <a href="{% url 'accounts:profile_edit' %}">Edit company profile →</a>

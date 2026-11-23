@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Applicants{% endblock %}
+{% block content %}
+{% if posting %}<p><a href="{% url 'postings:manage_detail' posting.pk %}">← Back to posting</a></p>{% endif %}
+<div class="page-head">
+  <div>
+    <h1>{% if posting %}Applicants for “{{ posting.title }}”{% else %}All Applicants{% endif %}</h1>
+    {% if posting %}<p class="muted">{{ posting.accepted_count }} of {{ posting.slots }} slot{{ posting.slots|pluralize }} filled · <span class="badge badge-{{ posting.status }}">{{ posting.get_status_display }}</span></p>{% endif %}
+  </div>
+</div>
+
+<div class="tabs">
+  {% for value, label, count in tabs %}
+    <a href="?status={{ value }}" class="tab{% if status == value %} active{% endif %}">{{ label }} <span class="tab-count">{{ count }}</span></a>
+  {% endfor %}
+</div>
+
+<div class="card">
+  {% if applications %}
+    <table class="table">
+      <thead><tr><th>Student</th><th>Program</th>{% if not posting %}<th>Posting</th>{% endif %}<th>Submitted</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for a in applications %}
+        <tr>
+          <td><strong>{{ a.student.last_name }}, {{ a.student.first_name }}</strong></td>
+          <td>{{ a.student.program }}-{{ a.student.year_level }}</td>
+          {% if not posting %}<td>{{ a.posting.title }}</td>{% endif %}
+          <td>{{ a.submitted_at|date:"M j, Y" }}</td>
+          <td><span class="badge badge-{{ a.status }}">{{ a.get_status_display }}</span></td>
+          <td class="right"><a href="{% url 'applications:applicant_detail' a.pk %}">Review →</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No applicants here yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

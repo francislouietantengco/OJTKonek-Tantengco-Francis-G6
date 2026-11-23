@@ -10,7 +10,12 @@
   <span class="badge badge-{{ posting.status }}">{{ posting.get_status_display }}</span>
 </div>
 
-{% block applicants_summary %}{% endblock %}
+<div class="stats">
+  <div class="stat"><span class="stat-num">{{ summary.total }}</span><span class="stat-label">Applicants</span></div>
+  <div class="stat"><span class="stat-num">{{ summary.pending }}</span><span class="stat-label">Pending</span></div>
+  <div class="stat"><span class="stat-num">{{ summary.under_review }}</span><span class="stat-label">Under review</span></div>
+  <div class="stat"><span class="stat-num">{{ summary.accepted }} / {{ posting.slots }}</span><span class="stat-label">Slots filled</span></div>
+</div>
 
 <div class="cols">
   <div class="card">
@@ -33,6 +38,7 @@
   <div class="card">
     <h2>Actions</h2>
     <div class="btn-group" style="flex-direction: column; align-items: stretch;">
+      <a class="btn" href="{% url 'applications:posting_applicants' posting.pk %}">View applicants</a>
       <a class="btn btn-secondary" href="{% url 'postings:edit' posting.pk %}">Edit posting</a>
       {% if posting.status != 'open' %}
         <form method="post" action="{% url 'postings:publish' posting.pk %}">
