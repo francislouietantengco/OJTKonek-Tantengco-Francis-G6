@@ -41,7 +41,7 @@ def _register(request, form_class, template, success_message):
 
 
 def register_student(request):
-    if not SchoolCoordinator.objects.exists():
+    if not SchoolCoordinator.objects.filter(user__is_superuser=False).exists():
         messages.warning(request, "Student registration opens once a school coordinator has been added.")
     return _register(
         request,
