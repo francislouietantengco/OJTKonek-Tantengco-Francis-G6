@@ -129,3 +129,12 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 1rem 0; }
 .badge-under_review { background: var(--info-bg); color: var(--primary-dark); }
 .badge-accepted { background: var(--ok-bg); color: var(--ok); }
 .badge-withdrawn { background: #e5e7eb; color: #6b7280; }
+.posting-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+.posting-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; color: var(--text); display: block; }
+.posting-card:hover { border-color: var(--primary); text-decoration: none; box-shadow: 0 4px 14px rgba(29,78,216,.12); }
+.posting-card h2 { margin: .5rem 0 .1rem; }
+.posting-card p { margin: 0 0 .5rem; }
+.meta { list-style: none; padding: 0; margin: 0; font-size: .9rem; color: var(--muted); }
+.meta li { margin: .15rem 0; }
+.filter-bar.card { padding: 1rem; }
+.filter-bar select.input { flex: 0 1 180px; }

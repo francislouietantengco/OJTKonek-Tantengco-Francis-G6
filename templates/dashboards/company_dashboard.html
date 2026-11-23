@@ -18,15 +18,30 @@
 {% endif %}
 
 <div class="stats">
-  <div class="stat"><span class="stat-num">0</span><span class="stat-label">Open postings</span></div>
-  <div class="stat"><span class="stat-num">0</span><span class="stat-label">New applicants</span></div>
-  <div class="stat"><span class="stat-num">0</span><span class="stat-label">Accepted</span></div>
+  <div class="stat"><span class="stat-num">{{ open_count }}</span><span class="stat-label">Open postings</span></div>
+  <div class="stat"><span class="stat-num">{{ draft_count }}</span><span class="stat-label">Drafts</span></div>
 </div>
 
 <div class="cols">
   <div class="card">
-    <h2>Your postings</h2>
-    <p class="muted">Posting management is coming in the next phase.</p>
+    <div class="page-head"><h2>Your postings</h2><a class="btn btn-small" href="{% url 'postings:create' %}">+ New posting</a></div>
+    {% if recent_postings %}
+      <table class="table">
+        <thead><tr><th>Title</th><th>Deadline</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for p in recent_postings %}
+          <tr>
+            <td><a href="{% url 'postings:manage_detail' p.pk %}">{{ p.title }}</a></td>
+            <td>{{ p.application_deadline|date:"M j, Y" }}</td>
+            <td><span class="badge badge-{{ p.status }}">{{ p.get_status_display }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p><a href="{% url 'postings:my_postings' %}">See all postings →</a></p>
+    {% else %}
+      <p class="muted">You have no postings yet.</p>
+    {% endif %}
   </div>
   <div class="card">
     <h2>Company profile</h2>

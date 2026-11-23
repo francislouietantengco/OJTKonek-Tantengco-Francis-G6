@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ posting.title }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'postings:my_postings' %}">← Back to my postings</a></p>
+<div class="page-head">
+  <div>
+    <h1>{{ posting.title }}</h1>
+    <p class="muted">{{ posting.field }} · {{ posting.location }} · {{ posting.duration_weeks }} weeks</p>
+  </div>
+  <span class="badge badge-{{ posting.status }}">{{ posting.get_status_display }}</span>
+</div>
+
+{% block applicants_summary %}{% endblock %}
+
+<div class="cols">
+  <div class="card">
+    <h2>Posting details</h2>
+    <dl class="details">
+      <dt>Field</dt><dd>{{ posting.field }}</dd>
+      <dt>Location</dt><dd>{{ posting.location }}</dd>
+      <dt>Duration</dt><dd>{{ posting.duration_weeks }} weeks</dd>
+      <dt>Slots</dt><dd>{{ posting.slots }}</dd>
+      <dt>Deadline</dt><dd>{{ posting.application_deadline|date:"F j, Y" }}{% if posting.deadline_passed %} <span class="badge badge-closed">Passed</span>{% endif %}</dd>
+      <dt>Created</dt><dd>{{ posting.created_at|date:"F j, Y" }}</dd>
+      <dt>Published</dt><dd>{{ posting.published_at|date:"F j, Y"|default:"—" }}</dd>
+    </dl>
+    <hr>
+    <h2>Description</h2>
+    <p>{{ posting.description|linebreaksbr }}</p>
+    {% if posting.requirements %}<h2>Requirements</h2><p>{{ posting.requirements|linebreaksbr }}</p>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Actions</h2>
+    <div class="btn-group" style="flex-direction: column; align-items: stretch;">
+      <a class="btn btn-secondary" href="{% url 'postings:edit' posting.pk %}">Edit posting</a>
+      {% if posting.status != 'open' %}
+        <form method="post" action="{% url 'postings:publish' posting.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-success btn-block">{% if posting.status == 'closed' %}Reopen{% else %}Publish{% endif %}</button>
+        </form>
+      {% endif %}
+      {% if posting.status != 'closed' %}
+        <form method="post" action="{% url 'postings:close' posting.pk %}" onsubmit="return confirm('Close this posting? Students will no longer see it.');">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-block">Close / remove posting</button>
+        </form>
+      {% endif %}
+    </div>
+    <p class="muted small">Postings are closed instead of deleted so application records are kept.</p>
+  </div>
+</div>
+{% endblock %}

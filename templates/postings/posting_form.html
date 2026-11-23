@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{% if posting %}Edit posting{% else %}New posting{% endif %}{% endblock %}
+{% block content %}
+<p><a href="{% if posting %}{% url 'postings:manage_detail' posting.pk %}{% else %}{% url 'postings:my_postings' %}{% endif %}">← Back</a></p>
+<div class="page-head">
+  <h1>{% if posting %}Edit “{{ posting.title }}”{% else %}New OJT posting{% endif %}</h1>
+</div>
+
+<form method="post" novalidate class="card grid-form">
+  {% csrf_token %}
+  {% include "accounts/_form_fields.html" %}
+  <div class="full btn-group">
+    {% if posting %}
+      <button type="submit" class="btn">Save changes</button>
+    {% else %}
+      <button type="submit" name="save_draft" class="btn btn-secondary">Save as draft</button>
+      <button type="submit" name="publish" class="btn">Save and publish</button>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}
