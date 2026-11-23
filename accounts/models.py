@@ -266,6 +266,8 @@ class Company(models.Model):
         self.verified_at = timezone.now()
         self.rejection_reason = reason
         self.save(update_fields=["verification_status", "verified_by", "verified_at", "rejection_reason"])
+        # BR-11: a rejected company must not have any Open posting.
+        return self.postings.filter(status="open").update(status="closed", updated_at=timezone.now())
 
     def resubmit(self):
         """A rejected company that updates its profile goes back to Pending for review."""
